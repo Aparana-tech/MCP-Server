@@ -9,7 +9,11 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # Initialize FastMCP server
-mcp = FastMCP("Gmail and Google Docs Server")
+port = os.environ.get("PORT")
+if port:
+    mcp = FastMCP("Gmail and Google Docs Server", host="0.0.0.0", port=int(port))
+else:
+    mcp = FastMCP("Gmail and Google Docs Server")
 
 # Scopes required for Gmail and Google Docs
 SCOPES = [
@@ -126,10 +130,9 @@ def append_to_doc(document_id_or_path: str, content_to_append: str) -> str:
 
 if __name__ == "__main__":
     # Start the FastMCP server
-    port = os.environ.get("PORT")
     if port:
         # Running in the cloud (Railway) -> use SSE
-        mcp.run(transport="sse", port=int(port), host="0.0.0.0")
+        mcp.run(transport="sse")
     else:
         # Running locally -> use stdio
         mcp.run()
